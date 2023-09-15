@@ -7,9 +7,10 @@ import { typeOrmConfig } from 'config/typeorm.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { PublisherModule } from './modules/publisher/publisher.module';
 import { AlbumModule } from './modules/album/album.module';
+import { UserAlbumModule } from './modules/user-album/user-album.module';
 
 @Module({
-  imports: [UserModule, TypeOrmModule.forRoot(typeOrmConfig), AuthModule, PublisherModule, AlbumModule],
+  imports: [UserModule, TypeOrmModule.forRoot(typeOrmConfig), AuthModule, PublisherModule, AlbumModule, UserAlbumModule],
   controllers: [AppController],
   providers: [AppService],
 })
