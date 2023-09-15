@@ -9,16 +9,26 @@ export class AuthService {
 
     async signIn(username: string, password: string) {
         const user = await this.userService.getUserByUsername(username);
-
+        
         if (!user) throw new BadRequestException('Ne postoji korisnik sa unetim korisnickim imenom');
 
-        if (!(await bcrypt.compare(password, user.password)))
+        const match = await bcrypt.compare(password, user.password);
+        
+        if (!match)
             throw new BadRequestException('Netacna lozinka!');
 
         const payload = { sub: user.id, username: user.username, role: user.role };
 
         return {
-            access_token: await this.jwtService.signAsync(payload),
+            // user: {
+            //     name: user.name,
+            //     surname: user.surname,
+            //     username: user.username,
+            //     email: user.email,
+            //     address: user.address,
+            //     phoneNumber: user.phoneNumber
+            // },
+            token: await this.jwtService.signAsync(payload),
         };
     }
 

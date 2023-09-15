@@ -34,6 +34,8 @@ export class UserAlbumService {
     //         throw new BadRequestException('Album ne postoji');
     //     }
 
+            // Array.from({ length: this.album.stickersNumber }, (_, i) => i + 1);
+            // userAlbum.missingStickers = stickersNumber
     //     const userAlbum = this.userAlbumRepository.create({
     //         ...userAlbumDto,
     //         user,

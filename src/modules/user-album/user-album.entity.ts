@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Album } from "../album/album.entity";
 import { User } from "../user/user.entity";
 
@@ -18,10 +18,7 @@ export class UserAlbum {
   album: Album;
 
   @OneToOne(() => User, (user) => user.userAlbum)
+  @JoinColumn()
   user: User;
-
-  constructor() {
-    this.missingStickers = Array.from({ length: this.album.stickersNumber }, (_, i) => i + 1);
-  }
 
 }
