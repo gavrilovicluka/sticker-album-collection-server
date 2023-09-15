@@ -1,8 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Album } from "../album/album.entity";
 
 @Entity()
 export class Publisher {
-    
+
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -12,5 +13,7 @@ export class Publisher {
   @Column()
   image: string;
 
-  // albums[]
+  @OneToMany(() => Album, (album) => album.publisher)
+  albums: Album[]
+
 }

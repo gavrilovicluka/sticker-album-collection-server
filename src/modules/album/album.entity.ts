@@ -1,8 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Publisher } from "../publisher/publisher.entity";
+import { UserAlbum } from "../user-album/user-album.entity";
 
 @Entity()
 export class Album {
-    
+
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -18,6 +20,10 @@ export class Album {
   @Column()
   imageUrl: string;
 
-  // publisher
-  // userAlbums[]
+  @ManyToOne(() => Publisher, (publisher) => publisher.albums)
+  publisher: Publisher;
+
+  @OneToMany(() => UserAlbum, (userAlbum) => userAlbum.album)
+  userAlbums: UserAlbum[];
+
 }
