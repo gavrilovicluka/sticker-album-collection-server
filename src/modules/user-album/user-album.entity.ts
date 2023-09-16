@@ -17,8 +17,7 @@ export class UserAlbum {
   @ManyToOne(() => Album, (album) => album.userAlbums)
   album: Album;
 
-  @OneToOne(() => User, (user) => user.userAlbum)
-  @JoinColumn()
+  @ManyToOne(() => User, (user) => user.userAlbums)
   user: User;
 
 }

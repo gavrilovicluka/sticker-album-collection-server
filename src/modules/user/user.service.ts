@@ -4,6 +4,7 @@ import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { UserRegisterDto } from './dto/user-register.dto';
 import * as bcrypt from 'bcrypt';
+import { UserEditDto } from './dto/user-edit.dto';
 
 @Injectable()
 export class UserService {
@@ -45,5 +46,9 @@ export class UserService {
         user.phoneNumber = userRegisterDto.phoneNumber;
 
         return this.repo.save(user);
+    }
+
+    public async update(userId: number, dto: UserEditDto) {
+        return await this.repo.update(userId, dto);
     }
 }

@@ -6,26 +6,23 @@ import { UserAlbumDto } from './dto/user-album.dto';
 export class UserAlbumController {
     constructor(private userAlbumService: UserAlbumService) { }
 
-    // By User ID
-    @Get()
-    public getUserAlbums() {
-        return this.userAlbumService.getAll();
+    @Get(":userId")
+    public getUserAlbums(@Param("userId", ParseIntPipe) userId: number) {
+        return this.userAlbumService.getAllByUserId(userId);
     }
 
-    // By User ID
-    @Get(":id")
-    public getUserAlbum(@Param("id", ParseIntPipe) id: number) {
-        return this.userAlbumService.getById(id);
+    @Get(":userId/:albumId")
+    public getUserAlbum(@Param("userId", ParseIntPipe) userId: number, @Param("albumId", ParseIntPipe) albumId: number) {
+        return this.userAlbumService.getByUserAndAlbumId(userId, albumId);
     }
 
-    // @Post(":userId/:albumId")
-    // public addUserAlbum(
-    //     @Param("userId", ParseIntPipe) userId: number,
-    //     @Param("albumId", ParseIntPipe) albumId: number,
-    //     @Body() dto: UserAlbumDto) {
+    @Post(":userId/:albumId")
+    public addUserAlbum(
+        @Param("userId", ParseIntPipe) userId: number,
+        @Param("albumId", ParseIntPipe) albumId: number) {
 
-    //     return this.userAlbumService.create(userId, albumId, dto);
-    // }
+        return this.userAlbumService.create(userId, albumId);
+    }
 
     @Delete(":id")
     public deleteUserAlbum(@Param("id", ParseIntPipe) id: number) {

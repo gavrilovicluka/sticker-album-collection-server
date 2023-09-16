@@ -15,6 +15,11 @@ export class PublisherController {
     public getPublisher(@Param("id", ParseIntPipe) id: number) {
         return this.publisherService.getById(id);
     }
+    
+    @Get(":id/albums")
+    public getPublisherByIdWithAlbums(@Param("id", ParseIntPipe) id: number) {
+        return this.publisherService.getByIdWithAlbums(id);
+    }
 
     @Post()
     public addPublisher(@Body() dto: PublisherDto) {

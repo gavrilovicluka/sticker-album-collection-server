@@ -1,4 +1,4 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserRoles } from "./enums/user-roles.enum";
 import { UserAlbum } from "../user-album/user-album.entity";
 
@@ -32,7 +32,7 @@ export class User {
   @Column({ type: 'enum', enum: UserRoles, default: UserRoles.MEMBER })
   role: UserRoles;
 
-  @OneToOne(() => UserAlbum, (userAlbum) => userAlbum.user)
-  userAlbum: UserAlbum;
+  @OneToMany(() => UserAlbum, (userAlbum) => userAlbum.user)
+  userAlbums: UserAlbum[];
   
 }

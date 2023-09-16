@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserRegisterDto } from './dto/user-register.dto';
+import { UserEditDto } from './dto/user-edit.dto';
 
 @Controller('user')
 export class UserController {
@@ -20,5 +21,13 @@ export class UserController {
     @Post('/register')
     doUserRegistration(@Body() userRegisterDto: UserRegisterDto) {
         return this.userService.doUserRegistration(userRegisterDto);
+    }
+
+    @Put(":userId")
+    public async updatUser(
+        @Param("userId", ParseIntPipe) userId: number,
+        @Body() dto: UserEditDto
+    ) {
+        return this.userService.update(userId, dto);
     }
 }

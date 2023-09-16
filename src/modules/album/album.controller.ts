@@ -16,9 +16,14 @@ export class AlbumController {
         return this.albumService.getById(id);
     }
 
-    @Post()
-    public addAlbum(@Body() dto: AlbumDto) {
-        return this.albumService.create(dto);
+    @Get("/publisher/:publisherId")
+    public getAlbumsByPublisherId(@Param("publisherId", ParseIntPipe) publisherId: number) {
+        return this.albumService.getAlbumsByPublisherId(publisherId);
+    }
+
+    @Post(":publisherId")
+    public addAlbum(@Param("publisherId", ParseIntPipe) publisherId: number, @Body() dto: AlbumDto) {
+        return this.albumService.create(publisherId, dto);
     }
 
     @Delete(":id")

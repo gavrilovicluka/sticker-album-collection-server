@@ -16,6 +16,10 @@ export class PublisherService {
         return this.publisherRepository.findOneBy({ id });
     }
 
+    public getByIdWithAlbums(id: number): Promise<Publisher | undefined> {
+        return this.publisherRepository.findOne( { where: { id }, relations: ['albums'] });
+    }
+
     public async create(publisherDto: PublisherDto): Promise<Publisher> {
         const publisher = this.publisherRepository.create(publisherDto);
         return await this.publisherRepository.save(publisher);
