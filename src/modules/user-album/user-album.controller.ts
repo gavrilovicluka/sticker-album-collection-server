@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { UserAlbumService } from './user-album.service';
 import { UserAlbumDto } from './dto/user-album.dto';
+import { UserAlbumEditDto } from './dto/user-album.edit.dto';
 
 @Controller('user-album')
 export class UserAlbumController {
@@ -9,6 +10,11 @@ export class UserAlbumController {
     @Get(":userId")
     public getUserAlbums(@Param("userId", ParseIntPipe) userId: number) {
         return this.userAlbumService.getAllByUserId(userId);
+    }
+    
+    @Get("/album/:albumId")
+    public getUserAlbumsByAlbumId(@Param("albumId", ParseIntPipe) albumId: number) {
+        return this.userAlbumService.getUserAlbumsByAlbumId(albumId);
     }
 
     @Get(":userId/:albumId")
@@ -36,4 +42,13 @@ export class UserAlbumController {
     ) {
         return this.userAlbumService.update(id, dto);
     }
+
+    // @Put(":id/stickers")
+    // public async updateUserAlbumStickers(
+    //     @Param("id", ParseIntPipe) id: number,
+    //     @Body() dto: UserAlbumEditDto
+    // ) {
+    //     return this.userAlbumService.updateStickers(id, dto);
+    // }
+
 }

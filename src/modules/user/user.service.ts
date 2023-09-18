@@ -16,7 +16,18 @@ export class UserService {
     }
 
     async getUserById(id: number): Promise<User> {
-        return this.repo.findOneBy({ id });
+        return this.repo.findOne({ 
+            where: { id },
+            select: {
+                'id': true,
+                'username': true,
+                'name': true,
+                'surname': true,
+                'address': true,
+                'email': true,
+                'phoneNumber': true
+            }
+         });
     }
 
     async getUserByUsername(username: string): Promise<User | undefined> {
