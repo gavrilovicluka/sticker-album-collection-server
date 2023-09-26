@@ -10,24 +10,28 @@ export class AuthService {
 
     async validateUser(username: string, password: string): Promise<any> {
         const user = await this.userService.getUserByUsername(username);
-    
+
         if (!user) {
-          throw new UnauthorizedException('Ne postoji korisnik sa unetim korisnickim imenom');
+            throw new UnauthorizedException('Ne postoji korisnik sa unetim korisnickim imenom');
         }
-    
+
         const isPasswordValid = await bcrypt.compare(password, user.password);
-    
+
         if (!isPasswordValid) {
-          throw new UnauthorizedException('Netacna lozinka!');
+            throw new UnauthorizedException('Netacna lozinka!');
         }
-    
+
         return user;
-      }
+    }
 
     async login(user: User): Promise<any> {
-        
+
         if (user) {
-            const payload = { sub: user.id, username: user.username, role: user.role };
+            const payload = {
+                sub: user.id,
+                username: user.username,
+                role: user.role
+            };
             return {
                 token: this.jwtService.sign(payload)
             }

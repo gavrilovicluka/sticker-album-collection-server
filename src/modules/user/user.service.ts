@@ -25,7 +25,8 @@ export class UserService {
                 'surname': true,
                 'address': true,
                 'email': true,
-                'phoneNumber': true
+                'phoneNumber': true,
+                'role': true
             }
          });
     }
