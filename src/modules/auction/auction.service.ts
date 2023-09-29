@@ -34,7 +34,7 @@ export class AuctionService {
         // auctionImage.imageUrl = `/uploads/${file.filename}`;
         // auction.productImage = auctionImage;
 
-        auction.productImage = `/uploads/${file.filename}`;
+        auction.productImage = `${file.filename}`;
 
         // if (productImage) {
         //     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -55,14 +55,15 @@ export class AuctionService {
 
 
     public async getAll(): Promise<Auction[]> {
-        const auctions = this.auctionRepository.find({
+        const auctions = await this.auctionRepository.find({
             relations: ['user']
         });
 
-        if (((await auctions).length === 0)) {
+        if (((auctions).length === 0)) {
             throw new BadRequestException('Ne postoje aukcije');
         }
 
         return auctions;
     }
+
 }

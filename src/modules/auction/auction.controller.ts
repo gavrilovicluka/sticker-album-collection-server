@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuctionService } from './auction.service';
 import { AuctionDto } from './dto/auction.dto';
 import { Roles } from '../auth/roles.decorator';
@@ -46,4 +46,5 @@ export class AuctionController {
     public getAuctions() {
         return this.auctionService.getAll();
     }
+
 }
