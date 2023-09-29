@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { UserRegisterDto } from './dto/user-register.dto';
 import * as bcrypt from 'bcrypt';
 import { UserEditDto } from './dto/user-edit.dto';
+import { AuctionService } from '../auction/auction.service';
 
 @Injectable()
 export class UserService {

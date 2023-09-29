@@ -1,6 +1,8 @@
 import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserRoles } from "./enums/user-roles.enum";
 import { UserAlbum } from "../user-album/user-album.entity";
+import { Bid } from "../bid/bid.entity";
+import { Auction } from "../auction/auction.entity";
 
 @Entity()
 export class User {
@@ -34,5 +36,11 @@ export class User {
 
   @OneToMany(() => UserAlbum, (userAlbum) => userAlbum.user)
   userAlbums: UserAlbum[];
+
+  @OneToMany(() => Auction, (auction) => auction.user)
+  auctions: Auction[];
+
+  @OneToMany(() => Bid, (bid) => bid.user)
+  bids: Bid[];
   
 }
