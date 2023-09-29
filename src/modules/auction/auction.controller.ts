@@ -46,5 +46,10 @@ export class AuctionController {
     public getAuctions() {
         return this.auctionService.getAll();
     }
+    
+    @Get(':aucionId')
+    public getAuctionById(@Param("aucionId", ParseIntPipe) aucionId: number,) {
+        return this.auctionService.getById(aucionId);
+    }
 
 }

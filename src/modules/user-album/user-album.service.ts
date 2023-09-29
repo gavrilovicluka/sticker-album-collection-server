@@ -40,16 +40,6 @@ export class UserAlbumService {
             .addSelect('user.username')
             .getMany();
 
-        // .find({ 
-        //     where: { album: { id: albumId } },
-        //     // relations: ['user'],     
-        //     relations: {
-        //         user: {
-        //             username: true
-        //         }
-        //     }
-        // });
-
         if (((await userAlbums).length === 0)) {
             throw new BadRequestException('Ne postoji nijedna kolekcija sa datim albumom.');
         }

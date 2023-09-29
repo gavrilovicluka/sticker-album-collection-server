@@ -66,4 +66,20 @@ export class AuctionService {
         return auctions;
     }
 
+    public getById(id: number): Promise<Auction> {
+        // return this.auctionRepository.findOneBy({ id });
+        const auction = this.auctionRepository
+            .createQueryBuilder('auction')
+            .where('auction.id = :id', { id })
+            .leftJoin('auction.user', 'user')
+            .addSelect('user.id')
+            .addSelect('user.username')
+            .addSelect('user.address')
+            .addSelect('user.phoneNumber')
+            .addSelect('user.email')
+            .getOne();
+
+        return auction;
+    }
+
 }
