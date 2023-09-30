@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuctionService } from './auction.service';
 import { AuctionDto } from './dto/auction.dto';
 import { Roles } from '../auth/roles.decorator';
@@ -43,20 +43,29 @@ export class AuctionController {
     // @UseGuards(RolesGuard)
     // @UseGuards(AuthGuard('jwt'))
     @Get()
-    public getAuctions() {
-        return this.auctionService.getAll();
+    public getAuctions(@Query('type') type: string) {
+        // return this.auctionService.getAll();
+        return this.auctionService.getAuctionsByType(type);
     }
 
     @Get(':aucionId')
     public getAuctionById(@Param("aucionId", ParseIntPipe) aucionId: number,) {
         return this.auctionService.getById(aucionId);
     }
-    
+
     @Get(':aucionId/bids')
     public getAuctionByIdWithBids(@Param("aucionId", ParseIntPipe) aucionId: number,) {
         return this.auctionService.getByIdWithBids(aucionId);
     }
 
+    @Get('/getWithData/:aucionId')
+    public getAuctionWithData(@Param("aucionId", ParseIntPipe) aucionId: number,) {
+        return this.auctionService.getWithData(aucionId);
+    }
+
+    // @Roles(UserRoles.MEMBER, UserRoles.ADMIN)
+    // @UseGuards(RolesGuard)
+    // @UseGuards(AuthGuard('jwt'))
     @Delete(":id")
     public deleteAuction(@Param("id", ParseIntPipe) id: number) {
         return this.auctionService.delete(id);
