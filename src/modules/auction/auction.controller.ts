@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuctionService } from './auction.service';
 import { AuctionDto } from './dto/auction.dto';
 import { Roles } from '../auth/roles.decorator';
@@ -46,10 +46,20 @@ export class AuctionController {
     public getAuctions() {
         return this.auctionService.getAll();
     }
-    
+
     @Get(':aucionId')
     public getAuctionById(@Param("aucionId", ParseIntPipe) aucionId: number,) {
         return this.auctionService.getById(aucionId);
+    }
+    
+    @Get(':aucionId/bids')
+    public getAuctionByIdWithBids(@Param("aucionId", ParseIntPipe) aucionId: number,) {
+        return this.auctionService.getByIdWithBids(aucionId);
+    }
+
+    @Delete(":id")
+    public deleteAuction(@Param("id", ParseIntPipe) id: number) {
+        return this.auctionService.delete(id);
     }
 
 }

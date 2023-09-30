@@ -6,6 +6,7 @@ import { UserService } from '../user/user.service';
 import { AuctionDto } from './dto/auction.dto';
 import { extname, join } from 'path';
 import { AuctionImage } from '../image/image.entity';
+import { Bid } from '../bid/bid.entity';
 
 @Injectable()
 export class AuctionService {
@@ -34,7 +35,7 @@ export class AuctionService {
         // auctionImage.imageUrl = `/uploads/${file.filename}`;
         // auction.productImage = auctionImage;
 
-        auction.productImage = `${file.filename}`;
+        auction.productImage = `/uploads/${file.filename}`;
 
         // if (productImage) {
         //     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -81,5 +82,18 @@ export class AuctionService {
 
         return auction;
     }
+
+    public getByIdWithBids(id: number): Promise<Auction> {
+        return this.auctionRepository.findOne({
+            where: { id },
+            relations: ['bids', 'bids.user']
+        });
+    }
+
+    public async delete(id: number) {
+        return await this.auctionRepository.delete(id);
+    }
+
+
 
 }
