@@ -1,9 +1,11 @@
 import { BadRequestException, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Bid } from './bid.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { UserService } from '../user/user.service';
 import { AuctionService } from '../auction/auction.service';
+import { AuctionListView } from '../auction/dto/auction.list.view';
+import { BidView } from './dto/bid.view';
 
 @Injectable()
 export class BidService {
@@ -11,7 +13,7 @@ export class BidService {
     constructor(
         @InjectRepository(Bid) private bidRepository: Repository<Bid>,
         private userService: UserService,
-        @Inject(forwardRef(() => AuctionService)) 
+        @Inject(forwardRef(() => AuctionService))
         private readonly auctionService: AuctionService
     ) { }
 
@@ -64,13 +66,61 @@ export class BidService {
             }
             // newBid.id = alreadyBid[0].id;         
             // return await this.bidRepository.update(alreadyBid[0].id, newBid);
-            
+
             const updatedBid = { ...alreadyBid, ...newBid };
             return await this.bidRepository.save(updatedBid);
         }
 
         const createdBid = this.bidRepository.create(newBid);
         return await this.bidRepository.save(createdBid);
+    }
+
+    public async getUserBids(userId: number, startDate: string, endDate: string): Promise<BidView[]> {
+
+        const bids = await this.bidRepository.find({
+            where: {
+                user: { id: userId },
+                bidTime: Between(new Date(startDate), new Date(endDate))
+            },
+            relations: ['auction', 'user'],
+        });
+
+        if (!bids) {
+            throw new BadRequestException('Ne postoje ponude');
+        }
+
+        return this.processBids(bids);
+    }
+
+    public async processBids(bids: Bid[]): Promise<BidView[]> {
+        const bidsView: BidView[] = [];
+
+        for (const bid of bids) {
+
+            let won: boolean = false;
+
+            if (bid.auction.endDate < new Date()) {
+                const topBid: Bid = await this.auctionService.getTopBid(bid.auction.id);
+
+                won = topBid.id === bid.id;
+            }
+
+            const bidView: BidView = {
+                id: bid.id,
+                bidPrice: bid.bidPrice,
+                bidTime: bid.bidTime,
+                bidUserId: bid.user.id,
+                auctionId: bid.auction.id,
+                productName: bid.auction.productName,
+                productDescription: bid.auction.productDescription,
+                endDate: bid.auction.endDate,
+                won: won
+            };
+
+            bidsView.push(bidView);
+        }
+
+        return bidsView;
     }
 
     public async delete(id: number) {

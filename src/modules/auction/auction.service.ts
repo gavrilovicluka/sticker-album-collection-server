@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Auction } from './auction.entity';
-import { Repository } from 'typeorm';
+import { Between, LessThan, MoreThan, Repository } from 'typeorm';
 import { UserService } from '../user/user.service';
 import { AuctionDto } from './dto/auction.dto';
 import { BidView } from '../bid/dto/bid.view';
@@ -166,7 +166,7 @@ export class AuctionService {
         return auctionsView;
     }
 
-    public getById(id: number): Promise<Auction> {
+    public async getById(id: number): Promise<Auction> {
         // return this.auctionRepository.findOneBy({ id });
         const auction = this.auctionRepository
             .createQueryBuilder('auction')
@@ -183,42 +183,31 @@ export class AuctionService {
 
         return auction;
     }
+    
+    public async getTopBid(id: number): Promise<Bid> {
+        
+        const auction = await this.auctionRepository.findOne({
+            where: { id },
+            relations: ['bids'],
+        });
 
-    public async getUserAuctionsWithFilter(id: number, type: string, startDate: string, endDate: string): Promise<Partial<AuctionView>[]> {
+        auction.bids.sort((a, b) => b.bidPrice - a.bidPrice);
+        const topBid = auction.bids[0];
 
-        // const queryAuctions = await this.auctionRepository.find({
-        //     where: { user: { id: id } },
-        //     relations: ['bids', 'bids.user']
-        // });
+        return topBid;
+        
+    }
 
-        let queryAuctions = await this.auctionRepository
-            .createQueryBuilder('auction')
-            .where('auction.user = :id', { id })
-            .leftJoinAndSelect('auction.bids', 'bids')
+    public async getUserAuctionsWithFilter(userId: number, startDate: string, endDate: string): Promise<Partial<AuctionView>[]> {
 
-        // auction.startDate <= :now AND
-        switch (type) {
-            case 'active':
-                queryAuctions = queryAuctions.where('auction.endDate >= :startDate AND auction.endDate <= :endDate', {
-                    startDate: new Date(startDate),
-                    endDate: new Date(endDate),
-                });
-                break;
-            // case 'ended':
-            //     queryAuctions = queryAuctions.where('auction.endDate < :now', {
-            //         now: new Date(),
-            //     });
-            //     break;
-            // case 'waiting':
-            //     queryAuctions = queryAuctions.where('auction.startDate > :now', {
-            //         now: new Date(),
-            //     });
-            //     break;
-            default:
-                throw new BadRequestException('Nepodržan tip aukcije');
-        }
-
-        const auctions = await queryAuctions.getMany();
+        const auctions = await this.auctionRepository.find({
+            where: {
+                user: { id: userId },
+                endDate: Between(new Date(startDate), new Date(endDate))
+            },
+            relations: ['user', 'bids'],
+        });
+        
         if (!auctions) {
             throw new BadRequestException('Ne postoje aukcije');
         }

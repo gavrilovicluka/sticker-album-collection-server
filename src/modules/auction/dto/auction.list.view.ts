@@ -9,5 +9,5 @@ export interface AuctionListView {
     endDate: Date;
     basePrice: number;
     productImage: string;
-    topBid: BidView;
+    topBid?: BidView;
 }

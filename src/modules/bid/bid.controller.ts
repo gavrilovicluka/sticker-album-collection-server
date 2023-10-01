@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { BidService } from './bid.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../auth/roles.decorator';
@@ -9,6 +9,18 @@ import { RolesGuard } from '../auth/roles.guard';
 export class BidController {
 
     constructor(private bidService: BidService) { }
+
+    // @Roles(UserRoles.ADMIN)
+    // @UseGuards(RolesGuard)
+    @UseGuards(AuthGuard('jwt'))
+    @Get('/userBids')
+    public getUserBids(
+        @Req() req,
+        @Query('startDate') startDate: string,
+        @Query('endDate') endDate: string
+    ) {
+        return this.bidService.getUserBids(req.user.userId, startDate, endDate);
+    }
 
     // @Roles(UserRoles.MEMBER)
     // @UseGuards(RolesGuard)

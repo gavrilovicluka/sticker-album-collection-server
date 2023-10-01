@@ -55,11 +55,10 @@ export class AuctionController {
     @Get('/userAuctions')
     public getUserAuctions(
         @Req() req,
-        @Query('type') type: string,
         @Query('startDate') startDate: string,
         @Query('endDate') endDate: string
     ) {
-        return this.auctionService.getUserAuctionsWithFilter(req.user.id, type, startDate, endDate);
+        return this.auctionService.getUserAuctionsWithFilter(req.user.userId, startDate, endDate);
     }
 
     // @Roles(UserRoles.ADMIN)
