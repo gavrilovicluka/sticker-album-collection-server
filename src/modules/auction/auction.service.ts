@@ -8,6 +8,7 @@ import { BidView } from '../bid/dto/bid.view';
 import { AuctionView } from './dto/auction.view';
 import { AuctionListView } from './dto/auction.list.view';
 import { BidService } from '../bid/bid.service';
+import { Bid } from '../bid/bid.entity';
 
 @Injectable()
 export class AuctionService {
@@ -33,26 +34,7 @@ export class AuctionService {
         auction.basePrice = auctionDto.basePrice;
         auction.productDescription = auctionDto.productDescription;
         auction.user = user;
-
-        // const auctionImage = new AuctionImage();
-        // auctionImage.imageUrl = `/uploads/${file.filename}`;
-        // auction.productImage = auctionImage;
-
         auction.productImage = `/uploads/${file.filename}`;
-
-        // if (productImage) {
-        //     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        //     const ext = extname(productImage.originalname);
-        //     const filename = `${uniqueSuffix}${ext}`;
-        //     const destination = './uploads'; // Putanja do foldera za čuvanje slika
-
-        //     // Čuvanje slike na serveru
-        //     // Možete koristiti fs.promises za čuvanje slike na disku
-        //     const filePath = join(destination, filename);
-        //     await fs.promises.writeFile(filePath, productImage.buffer);
-
-        //     auction.productImage = filePath; // Sačuvajte putanju do slike u bazi ili odgovarajući atribut
-        // }
 
         return await this.auctionRepository.save(auction);
     }
@@ -200,6 +182,69 @@ export class AuctionService {
             .getOne();
 
         return auction;
+    }
+
+    public async getUserAuctionsWithFilter(id: number, type: string, startDate: string, endDate: string): Promise<Partial<AuctionView>[]> {
+
+        // const queryAuctions = await this.auctionRepository.find({
+        //     where: { user: { id: id } },
+        //     relations: ['bids', 'bids.user']
+        // });
+
+        let queryAuctions = await this.auctionRepository
+            .createQueryBuilder('auction')
+            .where('auction.user = :id', { id })
+            .leftJoinAndSelect('auction.bids', 'bids')
+
+        // auction.startDate <= :now AND
+        switch (type) {
+            case 'active':
+                queryAuctions = queryAuctions.where('auction.endDate >= :startDate AND auction.endDate <= :endDate', {
+                    startDate: new Date(startDate),
+                    endDate: new Date(endDate),
+                });
+                break;
+            // case 'ended':
+            //     queryAuctions = queryAuctions.where('auction.endDate < :now', {
+            //         now: new Date(),
+            //     });
+            //     break;
+            // case 'waiting':
+            //     queryAuctions = queryAuctions.where('auction.startDate > :now', {
+            //         now: new Date(),
+            //     });
+            //     break;
+            default:
+                throw new BadRequestException('Nepodržan tip aukcije');
+        }
+
+        const auctions = await queryAuctions.getMany();
+        if (!auctions) {
+            throw new BadRequestException('Ne postoje aukcije');
+        }
+
+        let auctionsView: Partial<AuctionView>[] = [];
+
+        auctions.forEach(auction => {
+            auction.bids.sort((a, b) => b.bidPrice - a.bidPrice);
+            const topBid = auction.bids[0];
+
+            const auctionView: Partial<AuctionView> = {
+                id: auction.id,
+                productName: auction.productName,
+                productDescription: auction.productDescription,
+                startDate: auction.startDate,
+                endDate: auction.endDate,
+                basePrice: auction.basePrice,
+                productImage: auction.productImage,
+                numberOfBids: auction.bids ? auction.bids.length : 0,
+                bids: auction.bids as Partial<BidView>[] as BidView[]
+            }
+
+            auctionsView.push(auctionView);
+        });
+
+        return auctionsView;
     }
 
     public getByIdWithBids(id: number): Promise<Auction> {

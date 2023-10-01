@@ -39,6 +39,29 @@ export class AuctionController {
         return this.auctionService.create(dto, file, req);
     }
 
+    @Get('/filter')
+    filterAuctions(@Query('startDate') startDate: string, @Query('endDate') endDate: string) {
+        return {
+            noviDate: new Date(startDate),
+            endDate
+        }
+
+        // return this.auctionService.filterAuctions(startDate, endDate);
+    }
+
+    // @Roles(UserRoles.ADMIN)
+    // @UseGuards(RolesGuard)
+    @UseGuards(AuthGuard('jwt'))
+    @Get('/userAuctions')
+    public getUserAuctions(
+        @Req() req,
+        @Query('type') type: string,
+        @Query('startDate') startDate: string,
+        @Query('endDate') endDate: string
+    ) {
+        return this.auctionService.getUserAuctionsWithFilter(req.user.id, type, startDate, endDate);
+    }
+
     // @Roles(UserRoles.ADMIN)
     // @UseGuards(RolesGuard)
     // @UseGuards(AuthGuard('jwt'))
@@ -52,6 +75,8 @@ export class AuctionController {
     public getAuctionById(@Param("aucionId", ParseIntPipe) aucionId: number,) {
         return this.auctionService.getById(aucionId);
     }
+
+
 
     @Get(':aucionId/bids')
     public getAuctionByIdWithBids(@Param("aucionId", ParseIntPipe) aucionId: number,) {
@@ -70,5 +95,7 @@ export class AuctionController {
     public deleteAuction(@Param("id", ParseIntPipe) id: number) {
         return this.auctionService.delete(id);
     }
+
+
 
 }

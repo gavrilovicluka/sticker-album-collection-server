@@ -11,4 +11,6 @@ export interface AuctionView {
     productImage: string;
     user: User;
     bids: BidView[];
+    numberOfBids?: number;
+    status?: 'active' | 'sold';
 }
