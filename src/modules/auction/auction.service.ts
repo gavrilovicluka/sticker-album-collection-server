@@ -205,7 +205,7 @@ export class AuctionService {
                 user: { id: userId },
                 endDate: Between(new Date(startDate), new Date(endDate))
             },
-            relations: ['user', 'bids'],
+            relations: ['user', 'bids', 'bids.user'],
         });
         
         if (!auctions) {
@@ -218,6 +218,18 @@ export class AuctionService {
             auction.bids.sort((a, b) => b.bidPrice - a.bidPrice);
             const topBid = auction.bids[0];
 
+            const bidsView: BidView[] = [];
+
+            auction.bids.forEach(bid => {
+                const bidView: BidView = {
+                    id: bid.id,
+                    bidPrice: bid.bidPrice,
+                    bidTime: bid.bidTime,
+                    bidUserId: bid.user.id,
+                }
+                bidsView.push(bidView);
+            })
+
             const auctionView: Partial<AuctionView> = {
                 id: auction.id,
                 productName: auction.productName,
@@ -227,9 +239,10 @@ export class AuctionService {
                 basePrice: auction.basePrice,
                 productImage: auction.productImage,
                 numberOfBids: auction.bids ? auction.bids.length : 0,
-                bids: auction.bids as Partial<BidView>[] as BidView[]
+                bids: bidsView
+                
             }
-
+            
             auctionsView.push(auctionView);
         });
 
