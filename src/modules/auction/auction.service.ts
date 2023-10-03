@@ -88,28 +88,30 @@ export class AuctionService {
         return auctionsView;
     }
 
-    public async getAuctionsByType(type: string): Promise<AuctionListView[]> {
+    public async getAuctionsByTypeAndDays(type: string, pastDays: number): Promise<AuctionListView[]> {
 
         let auctionsQuery = await this.auctionRepository
             .createQueryBuilder('auction')
             .leftJoinAndSelect('auction.bids', 'bids')
             .leftJoinAndSelect('bids.user', 'bidUser')
 
+        const pastDate = new Date();
+        pastDate.setDate(pastDate.getDate() - pastDays);
+        
+        const futureDate = new Date();
+        futureDate.setDate(futureDate.getDate() + pastDays);
+
         switch (type) {
             case 'active':
-                auctionsQuery = auctionsQuery.where('auction.startDate <= :now AND auction.endDate >= :now', {
-                    now: new Date(),
-                });
+                auctionsQuery = auctionsQuery
+                .where('auction.startDate <= :now AND auction.endDate >= :now', { now: new Date() })
                 break;
             case 'ended':
-                auctionsQuery = auctionsQuery.where('auction.endDate < :now', {
-                    now: new Date(),
-                });
+                auctionsQuery = auctionsQuery
+                .where('auction.endDate < :now AND auction.endDate >= :pastDate', { now: new Date(), pastDate })
                 break;
             case 'waiting':
-                auctionsQuery = auctionsQuery.where('auction.startDate > :now', {
-                    now: new Date(),
-                });
+                auctionsQuery = auctionsQuery.where('auction.startDate > :now AND auction.startDate <= :futureDate', { now: new Date(), futureDate });
                 break;
             default:
                 throw new BadRequestException('Nepodržan tip aukcije');

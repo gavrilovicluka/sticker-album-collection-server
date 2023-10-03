@@ -69,10 +69,10 @@ export class AuctionController {
     // @Roles(UserRoles.ADMIN)
     // @UseGuards(RolesGuard)
     // @UseGuards(AuthGuard('jwt'))
-    @Get()
-    public getAuctions(@Query('type') type: string) {
-        // return this.auctionService.getAll();
-        return this.auctionService.getAuctionsByType(type);
+    @Post()
+    public getAuctions(/*@Query('type') type: string*/ @Body() data) {
+        // return this.auctionService.getAuctionsByType(type);
+        return this.auctionService.getAuctionsByTypeAndDays(data.auctionType, data.pastDays);
     }
 
     @Get(':aucionId')
