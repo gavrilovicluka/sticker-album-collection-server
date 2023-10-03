@@ -1,5 +1,4 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { AuctionImage } from "../image/image.entity";
 import { User } from "../user/user.entity";
 import { Bid } from "../bid/bid.entity";
 
@@ -26,10 +25,6 @@ export class Auction {
   
   @Column()
   productImage: string;
-
-  // @OneToOne(() => AuctionImage, (productImage) => productImage.auction)
-  // @JoinColumn()
-  // productImage: AuctionImage;
 
   @ManyToOne(() => User, (user) => user.auctions)
   user: User;

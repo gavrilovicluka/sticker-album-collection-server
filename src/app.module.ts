@@ -9,8 +9,8 @@ import { PublisherModule } from './modules/publisher/publisher.module';
 import { AlbumModule } from './modules/album/album.module';
 import { UserAlbumModule } from './modules/user-album/user-album.module';
 import { AuctionModule } from './modules/auction/auction.module';
-import { ImageModule } from './modules/image/image.module';
 import { BidModule } from './modules/bid/bid.module';
+import { WebsocketsGateway } from './websockets.gateway';
 
 @Module({
   imports: [
@@ -21,10 +21,9 @@ import { BidModule } from './modules/bid/bid.module';
     AlbumModule, 
     UserAlbumModule, 
     AuctionModule, 
-    ImageModule, 
     BidModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, WebsocketsGateway],
 })
 export class AppModule {}

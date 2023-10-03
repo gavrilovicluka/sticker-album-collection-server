@@ -20,7 +20,6 @@ export class AuthController {
     
     @Roles(UserRoles.MEMBER)
     @UseGuards(RolesGuard)
-    // @UseGuards(AuthGuard)
     @UseGuards(AuthGuard('jwt'))
     @Get('user')
     getUser(@Request() req) {

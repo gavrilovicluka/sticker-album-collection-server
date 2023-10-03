@@ -14,8 +14,8 @@ export class AuctionController {
 
     constructor(private auctionService: AuctionService) { }
 
-    // @Roles(UserRoles.MEMBER)
-    // @UseGuards(RolesGuard)
+    @Roles(UserRoles.MEMBER)
+    @UseGuards(RolesGuard)
     @UseGuards(AuthGuard('jwt'))
     @Post('create')
     @UseInterceptors(
@@ -49,8 +49,8 @@ export class AuctionController {
         // return this.auctionService.filterAuctions(startDate, endDate);
     }
 
-    // @Roles(UserRoles.ADMIN)
-    // @UseGuards(RolesGuard)
+    @Roles(UserRoles.MEMBER)
+    @UseGuards(RolesGuard)
     @UseGuards(AuthGuard('jwt'))
     @Get('/userAuctions')
     public getUserAuctions(
@@ -92,9 +92,9 @@ export class AuctionController {
         return this.auctionService.getWithData(aucionId);
     }
 
-    // @Roles(UserRoles.MEMBER, UserRoles.ADMIN)
-    // @UseGuards(RolesGuard)
-    // @UseGuards(AuthGuard('jwt'))
+    @Roles(UserRoles.MEMBER, UserRoles.ADMIN)
+    @UseGuards(RolesGuard)
+    @UseGuards(AuthGuard('jwt'))
     @Delete(":id")
     public deleteAuction(@Param("id", ParseIntPipe) id: number) {
         return this.auctionService.delete(id);

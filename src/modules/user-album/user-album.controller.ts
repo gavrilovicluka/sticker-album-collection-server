@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { UserAlbumService } from './user-album.service';
 import { UserAlbumDto } from './dto/user-album.dto';
-import { UserAlbumEditDto } from './dto/user-album.edit.dto';
 import { Roles } from '../auth/roles.decorator';
 import { UserRoles } from '../user/enums/user-roles.enum';
 import { RolesGuard } from '../auth/roles.guard';

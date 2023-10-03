@@ -18,8 +18,7 @@ export class BidService {
     ) { }
 
 
-    public async makeBid(bidPrice: number, auctionId: number, req): Promise<Bid> {
-
+    public async makeBid(bidPrice: number, auctionId: number, req): Promise<BidView> {
         const user = await this.userService.getUserById(req.user.userId);
         if (!user) {
             throw new BadRequestException('Korisnik ne postoji');
@@ -68,11 +67,39 @@ export class BidService {
             // return await this.bidRepository.update(alreadyBid[0].id, newBid);
 
             const updatedBid = { ...alreadyBid, ...newBid };
-            return await this.bidRepository.save(updatedBid);
+            await this.bidRepository.save(updatedBid);
+            
+            const updatedBidView: BidView = {
+                id: updatedBid.id,
+                bidPrice: updatedBid.bidPrice,
+                bidTime: updatedBid.bidTime,
+                bidUserId: updatedBid.user.id,
+                bidUsername: updatedBid.user.username,
+                bidUserAddress: updatedBid.user.address,
+                bidUserPhoneNumber: updatedBid.user.phoneNumber,
+                bidUserEmail: updatedBid.user.email,
+                auctionId: updatedBid.auction.id
+            }
+
+            return updatedBidView;
         }
 
         const createdBid = this.bidRepository.create(newBid);
-        return await this.bidRepository.save(createdBid);
+        await this.bidRepository.save(createdBid);
+
+        const createdBidView: BidView = {   
+            id: createdBid.id,
+            bidPrice: createdBid.bidPrice,
+            bidTime: createdBid.bidTime,
+            bidUserId: createdBid.user.id,
+            bidUsername: createdBid.user.username,
+            bidUserAddress: createdBid.user.address,
+            bidUserPhoneNumber: createdBid.user.phoneNumber,
+            bidUserEmail: createdBid.user.email,
+            auctionId: createdBid.auction.id
+        }
+
+        return createdBidView;
     }
 
     public async getUserBids(userId: number, startDate: string, endDate: string): Promise<BidView[]> {

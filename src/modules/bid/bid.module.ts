@@ -6,11 +6,12 @@ import { BidService } from './bid.service';
 import { UserModule } from '../user/user.module';
 import { AuctionModule } from '../auction/auction.module';
 import { AuctionService } from '../auction/auction.service';
+import { WebsocketsGateway } from 'src/websockets.gateway';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Bid]), UserModule, forwardRef(() => AuctionModule)],
     controllers: [BidController],
-    providers: [BidService],
+    providers: [BidService, WebsocketsGateway],
     exports: [BidService]
 })
 export class BidModule {}

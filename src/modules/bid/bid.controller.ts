@@ -4,14 +4,15 @@ import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../auth/roles.decorator';
 import { UserRoles } from '../user/enums/user-roles.enum';
 import { RolesGuard } from '../auth/roles.guard';
+import { WebsocketsGateway } from 'src/websockets.gateway';
 
 @Controller('bid')
 export class BidController {
 
-    constructor(private bidService: BidService) { }
+    constructor(private bidService: BidService, private readonly websocketsGateway: WebsocketsGateway) { }
 
-    // @Roles(UserRoles.ADMIN)
-    // @UseGuards(RolesGuard)
+    @Roles(UserRoles.MEMBER)
+    @UseGuards(RolesGuard)
     @UseGuards(AuthGuard('jwt'))
     @Get('/userBids')
     public getUserBids(
@@ -22,20 +23,22 @@ export class BidController {
         return this.bidService.getUserBids(req.user.userId, startDate, endDate);
     }
 
-    // @Roles(UserRoles.MEMBER)
-    // @UseGuards(RolesGuard)
+    @Roles(UserRoles.MEMBER)
+    @UseGuards(RolesGuard)
     @UseGuards(AuthGuard('jwt'))
     @Post('/create/:auctionId/:bidPrice')
-    public makeBid(
+    public async makeBid(
         @Param("auctionId", ParseIntPipe) auctionId: number,
         @Param("bidPrice", ParseIntPipe) bidPrice: number,
         @Req() req
     ) {
-        return this.bidService.makeBid(bidPrice, auctionId, req);
+        const newBid = this.bidService.makeBid(bidPrice, auctionId, req);
+        this.websocketsGateway.sendBidToClients(await newBid);
+        return newBid;
     }
 
-    // @Roles(UserRoles.MEMBER, UserRoles.ADMIN)
-    // @UseGuards(RolesGuard)
+    @Roles(UserRoles.MEMBER, UserRoles.ADMIN)
+    @UseGuards(RolesGuard)
     @UseGuards(AuthGuard('jwt'))
     @Delete(":id")
     public deleteAuction(@Param("id", ParseIntPipe) id: number) {
