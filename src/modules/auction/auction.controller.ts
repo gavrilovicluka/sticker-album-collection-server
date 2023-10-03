@@ -60,6 +60,11 @@ export class AuctionController {
     ) {
         return this.auctionService.getUserAuctionsWithFilter(req.user.userId, startDate, endDate);
     }
+    
+    @Get('/hot/:numberOfAuctions')
+    public getHotAuctions(@Param("numberOfAuctions", ParseIntPipe) numberOfAuctions: number) {
+        return this.auctionService.getHotAuctions(numberOfAuctions);
+    }
 
     // @Roles(UserRoles.ADMIN)
     // @UseGuards(RolesGuard)
@@ -71,7 +76,7 @@ export class AuctionController {
     }
 
     @Get(':aucionId')
-    public getAuctionById(@Param("aucionId", ParseIntPipe) aucionId: number,) {
+    public getAuctionById(@Param("aucionId", ParseIntPipe) aucionId: number) {
         return this.auctionService.getById(aucionId);
     }
 

@@ -41,16 +41,6 @@ export class AuctionService {
 
 
     public async getAll(): Promise<AuctionListView[]> {
-        // const auctions = await this.auctionRepository.find({
-        //     relations: ['user']
-        // });
-
-        // if (((auctions).length === 0)) {
-        //     throw new BadRequestException('Ne postoje aukcije');
-        // }
-
-        // return auctions;
-
 
         const auctions = await this.auctionRepository
             .createQueryBuilder('auction')
@@ -183,9 +173,9 @@ export class AuctionService {
 
         return auction;
     }
-    
+
     public async getTopBid(id: number): Promise<Bid> {
-        
+
         const auction = await this.auctionRepository.findOne({
             where: { id },
             relations: ['bids'],
@@ -195,7 +185,7 @@ export class AuctionService {
         const topBid = auction.bids[0];
 
         return topBid;
-        
+
     }
 
     public async getUserAuctionsWithFilter(userId: number, startDate: string, endDate: string): Promise<Partial<AuctionView>[]> {
@@ -207,7 +197,7 @@ export class AuctionService {
             },
             relations: ['user', 'bids', 'bids.user'],
         });
-        
+
         if (!auctions) {
             throw new BadRequestException('Ne postoje aukcije');
         }
@@ -240,13 +230,32 @@ export class AuctionService {
                 productImage: auction.productImage,
                 numberOfBids: auction.bids ? auction.bids.length : 0,
                 bids: bidsView
-                
+
             }
-            
+
             auctionsView.push(auctionView);
         });
 
         return auctionsView;
+    }
+
+    public async getHotAuctions(numberOfAuctions: number): Promise<Auction[]> {
+        let activeAuctions = await this.auctionRepository
+            .createQueryBuilder('auction')
+            .leftJoinAndSelect('auction.bids', 'bids')
+            .where('auction.startDate <= :now AND auction.endDate >= :now', {
+                now: new Date(),
+            }).getMany();
+
+        if (!activeAuctions) {
+            throw new BadRequestException('Ne postoje aktivne aukcije');
+        }
+
+        activeAuctions.sort((a, b) => b.bids.length - a.bids.length)
+
+        const hotAuctions = activeAuctions.slice(0, numberOfAuctions);
+
+        return hotAuctions
     }
 
     public getByIdWithBids(id: number): Promise<Auction> {
